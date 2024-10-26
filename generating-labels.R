@@ -1,7 +1,7 @@
 # Include order? ####
 # TRUE (Orthoptera, Acrididae)
 # FALSE (Family: Acrididae)
-order=TRUE
+includeOrder=TRUE
 
 # Importing ####
 library(readxl)
@@ -54,7 +54,7 @@ output=""
 
 # for each row in spreadsheet
 for(i in 1:nrow(x)) {
-  if (order==TRUE) {
+  if (includeOrder==TRUE) {
     # 1: Orthoptera, Acrididae (♀) (Larvae) 
     output <- paste0(output, x$order[i], comma, x$family[i])
   } else {
@@ -77,26 +77,28 @@ for(i in 1:nrow(x)) {
     # 2: AUSTRALIA: NSW (missing suburb)
     output <- paste0(output, x$country[i], colon, x$state[i], br)
   }
-  # 3: 30°16'31.4"S 149°51'46.4"E
-  if (!is.na(x$gps_coordinates[i])) {
-    output <- paste0(output, x$gps_coordinates[i], br)
-  }
   
-  if (!grepl("reared", x$location_notes[i], fixed = TRUE)) {
-    output <- paste0(output, x$day[i], dot, x$month[i], dot, x$year[i])
-    if (!is.na(x$collector[i])) {
-      # 4: 11.ix.2024, Tracy Yao
-      output <- paste0(output, comma, x$collector[i], br)
-    } else {
-      # 4: 11.ix.2024 (missing collector)
-      output <- paste0(output, br)
-    }
-  } else {
+  if (grepl("reared", x$location_notes[i], fixed = TRUE)) {
     # 4: 11.ix.2024 (if reared, will only include date)
     if (!is.na(x$day[i]) & !is.na(x$month[i]) & !is.na(x$year[i])) {
       output <- paste0(output, x$day[i], dot, x$month[i], dot, x$year[i], br)
+      }
+    } else {
+      # 3: 30°16'31.4"S 149°51'46.4"E
+      if (!is.na(x$gps_coordinates[i])) {
+        output <- paste0(output, x$gps_coordinates[i], br)
+      }
+      if (!is.na(x$day[i]) & !is.na(x$month[i]) & !is.na(x$year[i])) {
+        output <- paste0(output, x$day[i], dot, x$month[i], dot, x$year[i])
+      }
+      if (!is.na(x$collector[i])) {
+        # 4: 11.ix.2024, Tracy Yao
+        output <- paste0(output, comma, x$collector[i], br)
+      } else {
+        # 4: 11.ix.2024 (missing collector)
+        output <- paste0(output, br)
+      }
     }
-  }
   # 5: In ungrazed pasture
   if (!is.na(x$location_notes[i])) {
     output <- paste0(output, x$location_notes[i], br, br)
